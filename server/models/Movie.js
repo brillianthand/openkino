@@ -48,10 +48,33 @@ const MovieSchema = new mongoose.Schema({
     enum: ["trending", "popular", "newReleases"],
     default: "trending",
   },
+  videos: {
+    fhd: {
+      type: String,
+      default: null,
+    },
+    hd: {
+      type: String,
+      default: null,
+    },
+    sd: {
+      type: String,
+      default: null,
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
+
+// Виртуальное свойство для обратной совместимости
+MovieSchema.virtual("videoPath").get(function () {
+  return this.videos && this.videos.fhd ? this.videos.fhd : null;
+});
+
+// Устанавливаю toJSON и toObject опции для включения виртуальных свойств
+MovieSchema.set("toJSON", { virtuals: true });
+MovieSchema.set("toObject", { virtuals: true });
 
 module.exports = mongoose.model("Movie", MovieSchema);

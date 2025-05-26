@@ -4,11 +4,13 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import MovieRow from "../components/MovieRow";
 import { useWatchlist } from "../contexts/WatchlistContext";
+import { useAuth } from "../auth";
 import { FaTrash } from "react-icons/fa";
 
 export function Browse() {
   const location = useLocation();
   const path = location.pathname.slice(1); // Remove leading slash
+  const { isAuthenticated } = useAuth();
   const {
     watchlist,
     clearWatchlist,
@@ -90,13 +92,18 @@ export function Browse() {
 
   // Обновляем список при заходе на страницу "Мой список"
   useEffect(() => {
-    if (path === "mylist") {
+    if (path === "mylist" && isAuthenticated) {
       console.log("Browse: Обновляем список при заходе на страницу Мой список");
-      fetchWatchlist().catch((err) => {
-        console.error("Ошибка при обновлении списка в Browse:", err);
-      });
+      // Используем debounce для предотвращения частых вызовов
+      const timer = setTimeout(() => {
+        fetchWatchlist().catch((err) => {
+          console.error("Ошибка при обновлении списка в Browse:", err);
+        });
+      }, 300);
+
+      return () => clearTimeout(timer);
     }
-  }, [path, fetchWatchlist]);
+  }, [path, fetchWatchlist, isAuthenticated]);
 
   // Определяем заголовок на основе пути
   const getTitle = () => {
@@ -139,19 +146,23 @@ export function Browse() {
       {/* Отступ для Navbar */}
       <div className="pt-20">
         <div className="px-4 lg:px-16">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-white">{getTitle()}</h1>
+          {path !== "mylist" && (
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-white">{getTitle()}</h1>
+            </div>
+          )}
 
-            {path === "mylist" && watchlist.length > 0 && (
+          {path === "mylist" && watchlist.length > 0 && (
+            <div className="flex justify-end mb-8">
               <button
-                className="bg-netflix-red text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-red-700 transition"
+                className="bg-netflix-red hover:bg-netflix-red/80 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-colors duration-200"
                 onClick={clearWatchlist}
               >
                 <FaTrash size={14} />
-                <span>Очистить список</span>
+                <span>Очистить</span>
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {path === "mylist" ? (
@@ -161,7 +172,14 @@ export function Browse() {
                 <div className="text-white text-xl">Загрузка...</div>
               </div>
             ) : watchlist.length > 0 ? (
-              <MovieRow title="Мой список" movies={watchlist} />
+              <>
+                <div className="px-4 lg:px-16 mb-2">
+                  <h2 className="text-3xl font-bold text-white">
+                    {getTitle()}
+                  </h2>
+                </div>
+                <MovieRow title="" movies={watchlist} />
+              </>
             ) : (
               <div className="flex flex-col justify-center items-center min-h-[300px] text-white">
                 <p className="text-2xl mb-4">Ваш список пуст</p>

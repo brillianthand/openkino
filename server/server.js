@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const path = require("path");
+const fs = require("fs");
 
 // Загрузка переменных окружения
 require("dotenv").config();
@@ -10,6 +11,28 @@ require("dotenv").config();
 // Устанавливаем фиксированный JWT_SECRET, если он не определен в .env
 if (!process.env.JWT_SECRET) {
   process.env.JWT_SECRET = "your_jwt_secret_key";
+}
+
+// Создаем необходимые директории для видео
+const videosDir = path.join(__dirname, "videos");
+const localVideosDir = path.join(__dirname, "videos/local");
+const convertedVideosDir = path.join(__dirname, "videos/converted");
+
+// Создаем директории, если они не существуют
+if (!fs.existsSync(videosDir)) {
+  fs.mkdirSync(videosDir, { recursive: true });
+  console.log("Создана директория для видео:", videosDir);
+}
+if (!fs.existsSync(localVideosDir)) {
+  fs.mkdirSync(localVideosDir, { recursive: true });
+  console.log("Создана директория для локальных видео:", localVideosDir);
+}
+if (!fs.existsSync(convertedVideosDir)) {
+  fs.mkdirSync(convertedVideosDir, { recursive: true });
+  console.log(
+    "Создана директория для конвертированных видео:",
+    convertedVideosDir
+  );
 }
 
 const app = express();
@@ -75,6 +98,11 @@ if (process.env.NODE_ENV === "production") {
     res.json({ message: "Сервер Netflix Clone API работает" });
   });
 }
+
+// Простой маршрут для проверки API
+app.get("/api", (req, res) => {
+  res.json({ message: "API Netflix Clone работает" });
+});
 
 // Обработка ошибок 404 для остальных маршрутов
 app.use((req, res) => {

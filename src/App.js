@@ -8,9 +8,11 @@ import {
 import { Home } from "./pages/Home";
 import { Browse } from "./pages/Browse";
 import { AddMovie } from "./pages/AddMovie";
+import WatchPage from "./pages/WatchPage";
+import VideoConverter from "./pages/VideoConverter";
 import { WatchlistProvider } from "./contexts/WatchlistContext";
 import { Auth, AuthProvider, ProtectedRoute, AdminRoute } from "./auth";
-import "./styles.css";
+import "./styles/styles.css";
 
 function App() {
   return (
@@ -59,6 +61,22 @@ function App() {
                 <ProtectedRoute>
                   <Browse />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/watch/:id"
+              element={
+                <ProtectedRoute>
+                  <WatchPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/convert-videos"
+              element={
+                <AdminRoute>
+                  <VideoConverter />
+                </AdminRoute>
               }
             />
             <Route

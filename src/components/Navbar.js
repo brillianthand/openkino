@@ -9,6 +9,7 @@ import {
   FaPlusCircle,
   FaSignInAlt,
   FaUserPlus,
+  FaVideo,
 } from "react-icons/fa";
 import { useAuth } from "../auth";
 
@@ -134,16 +135,31 @@ const Navbar = () => {
               </Link>
             )}
             {isAuthenticated && isAdmin && (
-              <Link
-                to="/add-movie"
-                className={`text-base font-medium transition-colors flex items-center ${
-                  isActive("/add-movie")
-                    ? "text-white"
-                    : "text-gray-300 hover:text-white"
-                }`}
-              >
-                <FaPlusCircle className="mr-1" /> Добавить фильм
-              </Link>
+              <>
+                {" "}
+                <Link
+                  to="/add-movie"
+                  className={`text-base font-medium transition-colors flex items-center ${
+                    isActive("/add-movie")
+                      ? "text-white"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  {" "}
+                  <FaPlusCircle className="mr-1" /> Добавить фильм{" "}
+                </Link>{" "}
+                <Link
+                  to="/admin/convert-videos"
+                  className={`text-base font-medium transition-colors flex items-center ${
+                    isActive("/admin/convert-videos")
+                      ? "text-white"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  {" "}
+                  <FaVideo className="mr-1" /> Конвертация{" "}
+                </Link>{" "}
+              </>
             )}
           </div>
         </div>
@@ -260,6 +276,14 @@ const Navbar = () => {
                 className="text-base text-gray-300 hover:text-white"
               >
                 Добавить фильм
+              </Link>
+            )}
+            {isAuthenticated && isAdmin && (
+              <Link
+                to="/admin/convert-videos"
+                className="text-base text-gray-300 hover:text-white"
+              >
+                Конвертация видео
               </Link>
             )}
             {isAuthenticated ? (
